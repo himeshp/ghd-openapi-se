@@ -1,0 +1,27 @@
+{
+    "name": "himeshp/ghd-api",
+    "autoload": {
+        "psr-4": {
+            "Himeshp\\GhdApi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "himeshp",
+            "email": "panchal.himesh89@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../discussion-php"
+        }
+    ],
+    "require": {
+        "hp/ghd-openapi-se": "dev-main",
+        "monolog/monolog": "^3.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10"
+    }
+}
