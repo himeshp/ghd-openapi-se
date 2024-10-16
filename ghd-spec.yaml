@@ -1,0 +1,223 @@
+openapi: 3.0.0
+info:
+  title: GitHub Discussions API
+  version: 1.0.0
+servers:
+  - url: https://api.github.com
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500
+    maxInterval: 60000
+    maxElapsedTime: 3600000
+    exponent: 1.5
+  statusCodes:
+    - 5XX
+  retryConnectionErrors: true  
+components:
+  securitySchemes:
+    personalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Discussion:
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+security:
+  - personalToken: []
+paths:
+  /repos/{owner}/{repo}/discussions:
+    get:
+      summary: List Discussions for a Repository
+      operationId: listDiscussionsForRepo
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          description: The owner of the repository.
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: The name of the repository.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of discussions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    body:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+        'default':
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - personalToken: []
+
+    post:
+      summary: Create a Discussion
+      operationId: createDiscussion
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          description: The owner of the repository.
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: The name of the repository.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discussion'
+      responses:
+        '201':
+          description: Discussion created successfully.
+        'default':
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - personalToken: []
+
+  /repos/{owner}/{repo}/discussions/{discussion_number}:
+    get:
+      summary: Get a Single Discussion
+      operationId: getSingleDiscussion
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          description: The owner of the repository.
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: The name of the repository.
+          schema:
+            type: string
+        - name: discussion_number
+          in: path
+          required: true
+          description: The discussion number.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Discussion details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  body:
+                    type: string
+        'default':
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - personalToken: []
+
+    patch:
+      summary: Update a Discussion
+      operationId: updateDiscussion
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          description: The owner of the repository.
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: The name of the repository.
+          schema:
+            type: string
+        - name: discussion_number
+          in: path
+          required: true
+          description: The discussion number.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discussion'
+      responses:
+        '200':
+          description: Discussion updated successfully.
+        'default':
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - personalToken: []
+
+    delete:
+      summary: Delete a Discussion
+      operationId: deleteDiscussion
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          description: The owner of the repository.
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: The name of the repository.
+          schema:
+            type: string
+        - name: discussion_number
+          in: path
+          required: true
+          description: The discussion number.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Discussion deleted successfully.
+        'default':
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - personalToken: []
